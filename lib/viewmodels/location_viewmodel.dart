@@ -25,13 +25,19 @@ class LocationViewModel extends StateNotifier<LocationState> {
   LocationViewModel(
       this._weatherService, this._locationManager, this._sharedPreferences)
       : super(const LocationState()) {
+    _getCurrentUnit();
+    loadCodes();
+  }
+
+  void _getCurrentUnit() {
     if (_sharedPreferences.containsKey('temperatureUnit')) {
       final unit = _sharedPreferences.getString('temperatureUnit');
       if (unit == 'celsius') {
         currentUnit = TemperatureUnit.celsius;
+      } else {
+        currentUnit = TemperatureUnit.fahrenheit;
       }
     }
-    loadCodes();
   }
 
   Future loadCodes() async {
@@ -46,6 +52,7 @@ class LocationViewModel extends StateNotifier<LocationState> {
   }
 
   Future getWeather() async {
+    _getCurrentUnit();
     await getCurrentWeather();
     await getDailyWeather();
   }
